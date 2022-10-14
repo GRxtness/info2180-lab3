@@ -1,109 +1,89 @@
-window.onload = function() 
+document.addEventListener('DOMContentLoaded', (event) => {
 
-{
-    var arr = ["", "", "", "", "", "", "", "", ""];
-    var chances = {};
-    var squares = document.querySelectorAll("#board div");
-    var next = 1;
-    var status = document.getElementById("status");
+    let win = false;
+    let displayText = document.getElementById("status");
+    let reset = document.querySelector(".btn");
+    let turn = 1;
+    var tileArray = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    var gameboard = document.getElementById("board").children;
+    for (let i = 0; i < gameboard.length; i++) {
 
-    const winningConditions = 
-    [
+        const element = gameboard[i];
+        element.setAttribute("class", "square");
+
+
+        //mouseover
+        element.addEventListener("mouseover", function() {
+            element.classList.add("hover");
+        });
+
+        element.addEventListener("mouseout", function() {
+            element.classList.remove("hover");
+        });
+
+        //click
+        element.addEventListener("click", function() {
+            if (!element.textContent && win == false) {
+
+                if (turn % 2 == 0) {
+                    element.textContent = "O";
+                    element.classList.add("square", "O");
+                    tileArray[i] = "O";
+                    displayText.textContent = ('It\'s "X\'s" turn.');
+
+                } else {
+                    element.textContent = "X";
+                    element.classList.add("square", "X");
+                    tileArray[i] = "X";
+                    displayText.textContent = ('It\'s "O\'s" turn.');
+                }
+                win = checkWinner(displayText, tileArray);
+                turn++;
+            }
+
+
+        });
+
+        reset.addEventListener("click", function() {
+            element.textContent = "";
+            element.classList.remove("O");
+            element.classList.remove("X");
+            element.textContent = "";
+            turn = 1;
+            tileArray = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+            win = false;
+        });
+    }
+
+
+
+
+});
+
+function checkWinner(displayText, tileArray) {
+    let winTiles = [
         [0, 1, 2],
         [3, 4, 5],
         [6, 7, 8],
-        [0, 3, 6],
         [1, 4, 7],
+        [0, 3, 6],
         [2, 5, 8],
         [0, 4, 8],
         [2, 4, 6]
     ];
 
+    for (let i = 0; i < winTiles.length; i++) {
+        let winRow = winTiles[i];
+        let move1 = winRow[0];
+        let move2 = winRow[1];
+        let move3 = winRow[2];
 
-
-
-    for (var i = 0; i < squares.length; i++) 
-    {
-
-        squares[i].classList.add("square");
-        chances[i] = squares[i];
-        squares[i].addEventListener("click", function() 
-        {
-
-            for (var a in chances) 
-            {
-                if (this == squares[a]) 
-                {
-                    arr[a] = next;
-                }
-            }
-            if (
-                arr[0] == next && arr[1] == next && arr[2] == next ||
-                arr[3] == next && arr[4] == next && arr[5] == next ||
-                arr[6] == next && arr[7] == next && arr[8] == next ||
-                arr[0] == next && arr[3] == next && arr[6] == next ||
-                arr[1] == next && arr[4] == next && arr[7] == next ||
-                arr[2] == next && arr[5] == next && arr[8] == next ||
-                arr[0] == next && arr[4] == next && arr[8] == next ||
-                arr[2] == next && arr[4] == next && arr[6] == next
-            ) {
-
-                status.classList.add("you-won");
-                if (next == 1) {
-                    status.textContent = "Congratulations! X is the winner!";
-                } else {
-                    status.textContent = "Congratulations! O is the winner!";
-                }
-            }
-            if (next == 1) 
-            {
-                this.innerHTML = "X";
-                this.classList.add("X");
-                this.style.pointerEvents = 'none';
-                next = 2;
-
-            } else if (next == 2) 
-            {
-                this.innerHTML = "O";
-                this.classList.add("O");
-                this.style.pointerEvents = 'none';
-                next = 1;
-
-            }
-
-
-        });
-
-
-        squares[i].addEventListener("mouseover", function() 
-        {
-            this.classList.add("hover");
-        });
-
-
-        squares[i].addEventListener("mouseout", function() 
-        {
-            this.classList.remove("hover");
-        });
-
-
-        document.querySelector("button").addEventListener("click", function() 
-        {
-            for (var square of squares) {
-                square.style.pointerEvents = 'auto';
-                square.classList.remove("X");
-                square.classList.remove("O");
-                square.textContent = "";
-            }
-
-            next = 1;
-            arr = ["", "", "", "", "", "", "", "", ""];
-            status.textContent = "Move your mouse over a square and click to play an X or an O.";
-
-
-
-        });
-
+        if (tileArray[move1] == tileArray[move2] && tileArray[move2] == tileArray[move3]) {
+            displayText.textContent = ('Congratulations! ' + tileArray[move1] + ' is the Winner!');
+            return true;
+        }
     }
+
+    return false;
 
 }
